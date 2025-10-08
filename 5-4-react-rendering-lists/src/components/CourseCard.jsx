@@ -10,12 +10,21 @@ export default function CourseCard({ course, index, onMutateCourse }) {
   // 📘 TASK 4 — PART A (Anchor): Implement toggle using onMutateCourse + .map()
   function toggleTask(id) {
     // TODO: toggle the task with this id
+      onMutateCourse(index, (prev) => ({
+          tasks: prev.tasks.map(t =>
+              t.id === id ? { ...t, isDone: !t.isDone } : t
+          ),
+      }));
+
   }
 
 
   // 📘 TASK 4 — PART A (Anchor): Implement delete using onMutateCourse + .filter()
   function deleteTask(id) {
     // TODO: delete the task with this id
+      onMutateCourse(index, (prev) => ({
+          tasks: prev.tasks.filter(t => t.id !== id),
+      }));
   }
 
 
@@ -24,6 +33,15 @@ export default function CourseCard({ course, index, onMutateCourse }) {
     e.preventDefault();
     // TODO: create a new task { id, title, dueDate: date, isDone: false }
     // TODO: append it to existing tasks and reset inputs
+      const id = crypto.randomUUID();
+      const newTask = { id, title, dueDate: date, isDone: false };
+
+      onMutateCourse(index, (prev) => ({
+          tasks: [...prev.tasks, newTask],
+      }));
+
+      setTitle("");
+      setDate("");
   }
 
 
@@ -32,6 +50,10 @@ export default function CourseCard({ course, index, onMutateCourse }) {
       <header className="cardHeader">
         <h2>{course.title}</h2>
         {/* 🟩 PART A (Anchor): Show "All caught up" badge when ALL tasks are done (logical &&) */}
+          {course.tasks.length > 0 && course.tasks.every(task => task.done) && (
+              <span className="badge">All caught up </span>
+          )}
+
       </header>
 
 
@@ -41,6 +63,10 @@ export default function CourseCard({ course, index, onMutateCourse }) {
         {/* 🔎 Anchor: You’ll write your code right inside this list. */}
         <ul className="tasks">
           {/* TODO: course.tasks.map(task => <TaskItem key={task.id} task={task} onToggle={toggleTask} onDelete={deleteTask} />) */}
+            course.tasks.length === 0 ? (<p>No tasks yet. Add your first one below.</p>
+            ) : (
+            course.tasks.map(task => (<TaskItem key={task.id} task={task} onToggle={toggleTask} onDelete={deleteTask} />))
+            )
         </ul>
       </section>
 
